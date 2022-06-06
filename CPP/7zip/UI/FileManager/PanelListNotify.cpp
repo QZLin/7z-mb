@@ -34,11 +34,14 @@ using namespace NWindows;
 #define INT_TO_STR_SPEC(v) \
   while (v >= 10) { temp[i++] = (unsigned char)('0' + (unsigned)(v % 10)); v /= 10; } \
   *s++ = (unsigned char)('0' + (unsigned)v);
+#define ADD_DECIMAL_PART(v) *s++='.'; *s++=(unsigned char)('0'+(unsigned)(v%10)); *s++=(unsigned char)('0'+(unsigned)(v/10));
 
 static void ConvertSizeToString(UInt64 val, wchar_t *s) throw()
 {
   unsigned char temp[32];
   unsigned i = 0;
+  int decimal_part_2 = (int)(((float)val / (1024 * 1024)) * 100) % 100;
+  val /= 1024 * 1024;
   
   if (val <= (UInt32)0xFFFFFFFF)
   {
@@ -58,6 +61,7 @@ static void ConvertSizeToString(UInt64 val, wchar_t *s) throw()
       if (i == 2)
         *s++ = temp[0];
     }
+    ADD_DECIMAL_PART(decimal_part_2);
     *s = 0;
     return;
   }
@@ -81,6 +85,7 @@ static void ConvertSizeToString(UInt64 val, wchar_t *s) throw()
   }
   while (i -= 3);
   
+  ADD_DECIMAL_PART(decimal_part_2);
   *s = 0;
 }
 
